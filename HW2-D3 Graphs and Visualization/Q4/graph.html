@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+  <head>
+    <style>
+      #select_fz{
+        left: 300px;
+        top: 5px;
+      }
+      rect.bordered {
+        stroke: #E6E6E6;
+        stroke-width:2px; }
+      text.zf_sty {
+        font-size: 9pt;
+        font-family: Consolas, courier;
+        fill: #aaa;}
+      text.zf_Axi {
+        font-size: 12pt;
+        font-weight, bold;
+        font-family: Consolas, courier;
+        fill: #aaa;}
+      text.axis_s {fill: #000;}
+      select{
+        position: relative;
+        width: 150px;
+        font-weight: regular;
+        font-size:14px;
+        color: #000;
+        padding: 8px;}
+    </style>
+    <script src="http://d3js.org/d3.v3.js"></script>
+  </head>
+  <body>
+    <div id="title"></div>
+    <div id="tags"></div>
+    <div id="chart"></div>
+    <div id="dataset-picker">
+    </div>
+    <script type="text/javascript">
+    var svg = d3.select('#title')
+          .append('svg')
+          .attr({'width':800,'height':30});
+      svg.append("text")
+         .attr("transform", "translate("+370+", "+20+")")
+         .style("font-weight", "bold")
+         .text("Visualizing Wizarding Houses & Spells");
+    </script>>
+    <script type="text/javascript">
+      var margin = { top: 30, right: 0, bottom: 100, left: 230 },
+          width = 960 - margin.left - margin.right,
+          height = 680 - margin.top - margin.bottom,
+          gridSize = Math.floor(width / 10),
+          legendElementWidth = gridSize*1,
+          buckets = 9,
+          colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"], 
+          books = ["Sorcerer's Stone", "Chamber of Secrets", "Prisoner of Azkaban", "Goblet of Fire", "Order of the Phoenix", "Half Blood Prince", "Deathly Hallows"],
+          spells = ["Charm", "Conjuration", "Counter", "Curse", "Healing", "Hex", "Jinx", "Transfiguration"];
+          mydata = ["heatmap.csv"];
+
+      var svg = d3.select("#chart").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
+
+      var Axis = ["Book", "Spell Type"];
+      var xAxis = svg.selectAll(".xAxis")
+          .data(Axis)
+          .enter().append("text")
+            .text("Books")
+            .attr("x", -20)
+            .attr("y", 10)
+            .style("text-anchor", "end")
+            .attr("class", function (d, i) { return "xAxis zf_Axi axis axis_s"; });
+      var yAxis = svg.selectAll(".yAxis")
+          .data(Axis)
+          .enter().append("text")
+            .text("Spell Type")
+            .attr("x", (9+0.8)*gridSize)
+            .attr("y", (7+0.2)*gridSize)
+            .style("text-anchor", "end")
+            .attr("class", function (d, i) { return "yAxis zf_Axi axis axis_s"; });
+      var spellLabel = svg.selectAll(".sAxis")
+          .data(Axis)
+          .enter().append("text")
+            .text("No. of Spells")
+            .attr("x", (1+0.8)*gridSize)
+            .attr("y", (7+0.8)*gridSize)
+            .style("text-anchor", "end")
+            .attr("class", function (d, i) { return "sAxis zf_Axi axis axis_s"; });
+
+      var xLabels = svg.selectAll(".xLabel")
+          .data(books)
+          .enter().append("text")
+            .text(function (d) { return d; })
+            .attr("x", 0)
+            .attr("y", function (d, i) { return i * gridSize; })
+            .style("text-anchor", "end")
+            .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
+            .attr("class", function (d, i) { return "xLabel zf_sty axis axis_s"; })
+          
+
+      var yLabels = svg.selectAll(".yLabel")
+          .data(spells)
+          .enter().append("text")
+            .text(function(d) { return d; })
+            .attr("x", function(d, i) { return i * gridSize; })
+            .attr("y", 0)
+            .style("text-anchor", "middle")
+            .attr("transform", "translate(" + gridSize / 2 + ", "+ gridSize*(7+0.25) +")")
+            .attr("class", function(d, i) { return "yLabel zf_sty axis axis_s"; });
+
+      var heatmapChart = function(File, tag) {
+        d3.csv(File, function(error, data) { 
+          var Gryffindor = [];
+          var Hufflepuff = [];
+          var Ravenclaw = [];
+          var Slytherin = [];
+          var tags = [Gryffindor, Hufflepuff, Ravenclaw, Slytherin];
+          data.forEach(function(d){
+            d["Sorcerer's Stone"] = +d["Sorcerer's Stone"];
+            d["Chamber of Secrets"] = +d["Chamber of Secrets"];
+            d["Prisoner of Azkaban"] = +d["Prisoner of Azkaban"];
+            d["Goblet of Fire"] = +d["Goblet of Fire"];
+            d["Order of the Phoenix"] = +d["Order of the Phoenix"];
+            d["Half Blood Prince"] = +d["Half Blood Prince"];
+            d["Deathly Hallows"] = +d["Deathly Hallows"];
+            var Spell = 0;
+            if (d.SpellType == "Charm")
+              Spell = 1;
+            if (d.SpellType == "Conjuration")
+              Spell = 2;
+            if (d.SpellType == "Counter Spell")
+              Spell = 3;
+            if (d.SpellType == "Curse")
+              Spell = 4;
+            if (d.SpellType == "Healing Spell")
+              Spell = 5;
+            if (d.SpellType == "Hex")
+              Spell = 6;
+            if (d.SpellType == "Jinx")
+              Spell = 7;
+            if (d.SpellType == "Transfiguration")
+              Spell = 8;
+            if (d.House == "Gryffindor"){
+              Gryffindor.push({book:1, spell:Spell, value:d["Sorcerer's Stone"]});
+              Gryffindor.push({book:2, spell:Spell, value:d["Chamber of Secrets"]});
+              Gryffindor.push({book:3, spell:Spell, value:d["Prisoner of Azkaban"]});
+              Gryffindor.push({book:4, spell:Spell, value:d["Goblet of Fire"]});
+              Gryffindor.push({book:5, spell:Spell, value:d["Order of the Phoenix"]});
+              Gryffindor.push({book:6, spell:Spell, value:d["Half Blood Prince"]});
+              Gryffindor.push({book:7, spell:Spell, value:d["Deathly Hallows"]});}
+            if (d.House == "Hufflepuff"){
+              Hufflepuff.push({book:1, spell:Spell, value:d["Sorcerer's Stone"]});
+              Hufflepuff.push({book:2, spell:Spell, value:d["Chamber of Secrets"]});
+              Hufflepuff.push({book:3, spell:Spell, value:d["Prisoner of Azkaban"]});
+              Hufflepuff.push({book:4, spell:Spell, value:d["Goblet of Fire"]});
+              Hufflepuff.push({book:5, spell:Spell, value:d["Order of the Phoenix"]});
+              Hufflepuff.push({book:6, spell:Spell, value:d["Half Blood Prince"]});
+              Hufflepuff.push({book:7, spell:Spell, value:d["Deathly Hallows"]});}
+            if (d.House == "Ravenclaw"){
+              Ravenclaw.push({book:1, spell:Spell, value:d["Sorcerer's Stone"]});
+              Ravenclaw.push({book:2, spell:Spell, value:d["Chamber of Secrets"]});
+              Ravenclaw.push({book:3, spell:Spell, value:d["Prisoner of Azkaban"]});
+              Ravenclaw.push({book:4, spell:Spell, value:d["Goblet of Fire"]});
+              Ravenclaw.push({book:5, spell:Spell, value:d["Order of the Phoenix"]});
+              Ravenclaw.push({book:6, spell:Spell, value:d["Half Blood Prince"]});
+              Ravenclaw.push({book:7, spell:Spell, value:d["Deathly Hallows"]});}
+            if (d.House == "Slytherin"){
+              Slytherin.push({book:1, spell:Spell, value:d["Sorcerer's Stone"]});
+              Slytherin.push({book:2, spell:Spell, value:d["Chamber of Secrets"]});
+              Slytherin.push({book:3, spell:Spell, value:d["Prisoner of Azkaban"]});
+              Slytherin.push({book:4, spell:Spell, value:d["Goblet of Fire"]});
+              Slytherin.push({book:5, spell:Spell, value:d["Order of the Phoenix"]});
+              Slytherin.push({book:6, spell:Spell, value:d["Half Blood Prince"]});
+              Slytherin.push({book:7, spell:Spell, value:d["Deathly Hallows"]});}
+
+          });
+          // console.log(Gryffindor);
+          // console.log(Hufflepuff);
+          cur_data = tags[tag];
+          var colorScale = d3.scale.quantile()
+              .domain([0, buckets - 1, d3.max(Gryffindor, function (d) { return d.value; })])
+              .range(colors);
+          var cards = svg.selectAll(".hour")
+              .data(cur_data, function(d) {return d.book+':'+d.spell;});
+
+          cards.append("title");
+
+          cards.enter().append("rect")
+              .attr("x", function(d) { return (d.spell - 1) * gridSize; })
+              .attr("y", function(d) { return (d.book - 1) * gridSize; })
+              .attr("rx", 4)
+              .attr("ry", 4)
+              .attr("class", "hour bordered")
+              .attr("width", gridSize)
+              .attr("height", gridSize)
+              .style("fill", colors[0]);
+
+          cards.transition().duration(1000)
+              .style("fill", function(d) { return colorScale(d.value); });
+
+          cards.select("title").text(function(d) { return d.value; });
+          
+          cards.exit().remove();
+
+          var legend = svg.selectAll(".legend")
+              .data([0].concat(colorScale.quantiles()), function(d) { return d; });
+
+          legend.enter().append("g")
+              .attr("class", "legend");
+
+          legend.append("rect")
+            .attr("x", function(d, i) { return legendElementWidth * i; })
+            .attr("y", height)
+            .attr("width", legendElementWidth)
+            .attr("height", gridSize / 2)
+            .style("fill", function(d, i) { return colors[i]; });
+
+          legend.append("text")
+            .attr("class", "zf_sty")
+            .text(function(d) { return "≥ " + Math.round(d); })
+            .attr("x", function(d, i) { return legendElementWidth * i; })
+            .attr("y", height + gridSize);
+
+          legend.exit().remove();
+
+        });  
+      };
+
+      heatmapChart(mydata[0],0);
+
+      var selects = ["Gryffindor","Hufflepuff","Ravenclaw","Slytherin"];
+      var select = d3.select("#tags")
+                        .append("select")
+                        .attr("class", "select")
+                        .attr("id", "select_fz")
+                        .on("change", onchange);
+
+
+      var options = select.selectAll("option")
+                          .data(selects).enter()
+                          .append("option")
+                          .text(function(d){return d;});
+
+      var Box = ["House Selection"];
+      var Box_name = svg.selectAll(".BoxAxis")
+          .data(Box)
+          .enter().append("text")
+            .text("House Selection")
+            .attr("x", (3)*gridSize)
+            .attr("y", -10)
+            .style("text-anchor", "end")
+            .attr("class", function (d, i) { return "BoxAxis zf_Axi axis axis_s"; });
+
+      function onchange(){
+        selectValue = d3.select("select").property("value");
+        console.log(selectValue);
+        if (selectValue=="Gryffindor")
+          tag = 0;
+        if (selectValue=="Hufflepuff")
+          tag = 1;
+        if (selectValue=="Ravenclaw")
+          tag = 2;
+        if (selectValue=="Slytherin")
+          tag = 3;
+        heatmapChart(mydata[0], tag);
+      }
+      
+    </script>
+  </body>
+</html>

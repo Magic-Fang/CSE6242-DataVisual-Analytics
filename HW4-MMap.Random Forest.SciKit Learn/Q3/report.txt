@@ -1,0 +1,62 @@
+****************************************
+Q3.1
+
+Linear Regression - 
+	Training Accuracy: 86%
+	Testing Accuracy: 82%
+
+SVM -
+	Training Accuracy: 80%
+	Testing Accuracy: 80%
+
+MLP - 
+	Training Accuracy: 100%
+	Testing Accuracy: 81%
+
+Random Forest - 
+	Training Accuracy: 100%
+	Testing Accuracy: 95%
+
+****************************************
+Q3.2 - Hyperparameter tuning
+
+Random Forest - 
+	n_estimators values tested (at least 3): 10, 20, 40, 60, 80, 100, 120, 140
+
+	max_depth values tested (at least 3): 6, 8, 10, 30, 50, 75, 100
+		
+	Best combination of parameter values:
+		n_estimators: 60
+		max_depth: 50
+
+	Testing Accuracy before tuning (default parameters): 95%
+	Testing Accuracy after tuning: 96%
+
+
+SVM -
+	Kernels values tested: rbf, linear
+	C values tested (at least 3): 0.001, 0.01, 0.1, 1, 10, 100
+		
+	Best combination of parameter values: 
+		Kernel: linear
+		C: 0.001
+
+	Testing Accuracy before tuning (default parameters): 80%
+	Testing Accuracy after tuning: 80%
+
+****************************************
+Q3.3
+
+For your SVM's CV run from Q3.2, state the highest mean testing accuracy 
+across the sets of parameter values and its corresponding mean train score and mean fit time. 
+
+SVM's highest mean testing/cross-validated accuracy (best score): 80%
+SVM's mean train score: 80%
+SVM's mean fit time: 0.29973881 seconds
+
+****************************************
+Q3.4
+
+Best Classifier: Random Forest
+Why: Obviously, the testing score of random forest model is the highest among all the models, as well as the 100% training accuracy. Therefore, we can conclude that random forest model is very suitable for this dataset. Beside that, the fitting time is also reasonable, which just cost less than 1 second.
+

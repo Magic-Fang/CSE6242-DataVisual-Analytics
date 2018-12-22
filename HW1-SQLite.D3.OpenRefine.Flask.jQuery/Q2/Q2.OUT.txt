@@ -1,0 +1,70 @@
+cast    movies
+~~~~~
+500
+5090
+~~~~~
+cast_index                 scores_index             
+movie_index                sqlite_autoindex_movies_1
+~~~~~
+average_score
+52.958071278826
+~~~~~
+id,name,score
+771243843,Safe Haven: The Underground Railroad During The Vietnam War,1
+770683913,Star Wars: The Clone Wars,1
+770927409,World War II - Canada at War,1
+770992862,World War II - When Lions Roared,1
+770808057,A Warrior's Heart,2
+~~~~~
+cast_id,cast_name,movie_count
+411489874,Aaron Kwok,2
+364609382,Aldo Ray,2
+770914628,Alexei Petrenko,2
+162661744,Ally Sheedy,2
+770678032,Andrew Tiernan,2
+770767561,Angela Down,2
+162657037,Ann Robinson,2
+162758915,Anna Levine,2
+364619043,Anthony 'Treach' Criss,2
+770714264,Anthony Ray,2
+~~~~~
+cast_id,cast_name,average_score
+162655836,Charlton Heston,85.4
+770685050,Dick Cheney,83.0
+326391032,George W. Bush,83.0
+162653967,Anthony Hopkins,81.75
+770725563,Franklin Delano Roosevelt,78.0
+162678070,Maury Chaykin,74.3333333333333
+770723760,Scott Ritter,71.0
+162663355,Carrie Fisher,69.0
+162661579,Harrison Ford,69.0
+364658973,Don Harvey,68.6666666666667
+~~~~~
+0,cast_member_id1,INT,0,,0
+1,name1,TEXT,0,,0
+2,cast_member_id2,INT,0,,0
+3,name2,TEXT,0,,0
+4,movie_count,,0,,0
+5,average_movie_score,,0,,0
+57.75
+~~~~~
+cast_id,cast_name,collaboration_score
+770685050,Dick Cheney,83.0
+326391032,George W. Bush,83.0
+162652764,Dakota Fanning,56.6666666666667
+162657036,Gene Barry,56.6666666666667
+162652765,Miranda Otto,56.6666666666667
+~~~~~
+count(id)
+12
+~~~~~
+id
+76
+194
+582
+843
+137182
+152601
+265195
+293299
+~~~~~

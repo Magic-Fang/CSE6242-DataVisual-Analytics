@@ -1,0 +1,14 @@
+Parameter, Value
+1_Mean Absolute Error,1656.147651
+1_Root Mean Squared Error,2456.983209
+1_Relative Absolute Error,0.276606
+1_Relative Squared Error,0.089608
+1_Coefficient of Determination,0.910392
+2_Mean Absolute Error,1379.450647
+2_Root Mean Squared Error,1901.771763
+2_Relative Absolute Error,0.31734
+2_Relative Squared Error,0.100784
+2_Coefficient of Determination,0.899216
+3_RMSE for 1st fold,1974.059336
+3_RMSE for 2nd fold,2917.330935
+3_RMSE for 3rd fold,2225.245955

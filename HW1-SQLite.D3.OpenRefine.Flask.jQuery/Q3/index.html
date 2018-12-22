@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>zfang74</title>
+</head>
+<body>
+	<script type="text/javascript" src="d3/d3.v3.min.js"></script>
+	<script>
+		var  padding = 30 ,
+		     w = window.innerWidth - 2 * padding,
+	    	     h = window.innerHeight - 2 * padding;
+		var svg = d3.select('body')
+			.append('svg')
+			.attr({'width':w,'height':h});
+		var g = svg.append('g')
+		var text = g.append('text').text('ZHOU FANG').attr('fill','black')
+		  .attr('x', 250)
+		  .attr('y', 25)
+		  .attr('text-anchor', 'middle')
+		  .style('font-size', '40px')
+		  .attr('dy', 8)		
+
+		
+		//var arc = d3.svg.symbol().type('triangle-up')
+		//			.size(function(d){ return scale(d[0]); });
+		//var cross = d3.svg.symbol().type('cross')
+		//			.size(function(d){ return scale(d[0]); });
+		
+		var average_x=0;
+		var data = [];
+		var AMP = 1;
+		for (var i=0; i<60; i++){
+		var new_x = Math.random()*100;
+		var new_y = Math.random()*100;
+		average_x += new_x;		
+		data.push([new_x,new_y]);
+		}
+		average_x = average_x/60;
+
+
+
+		var scale = d3.scale.linear()
+						.domain([1,50])
+						.range([5,50]);
+
+
+		var group = svg.append('g')
+			.attr('transform','translate('+ 0 +','+ 0 +')');
+		var group2 = svg.append('g')
+			.attr('transform','translate('+ 0 +','+ 0 +')');
+		var xScale = d3.scale.linear()
+						.domain([0, 100])
+						.range([padding, w-padding]);
+ 
+		var yScale = d3.scale.linear()
+						.domain([100, 0])
+						.range([h-padding, padding]);
+		var line = group.selectAll('path')
+				.data(data)
+				.enter()
+				.append('path')
+				//.attr('d', arc)
+				.attr("d", d3.svg.symbol()
+				.type(function(d,i)
+				{if(i<30) return 'triangle-up';
+				else return 'cross';})	
+				.size(function(d){ return scale(d[0]); }))
+				.attr('fill',function(d){
+				 if (d[0]>=average_x){return "blue";}
+				 else return "green";
+				 })
+				.attr('transform',function(d)
+			{ return "translate("+xScale(d[0])+","+yScale(d[1])+")"; });
+
+		var xAxis = d3.svg.axis()
+					.scale(xScale)
+					.orient('bottom');
+		var yAxis= d3.svg.axis()
+					.scale(yScale)
+					.orient('left');
+		svg.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(0, " + (h-padding) + ")")
+               .call(xAxis);
+
+            	svg.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(" + padding + ", 0)")
+               .call(yAxis);
+		
+	</script>
+</body>
+</html>

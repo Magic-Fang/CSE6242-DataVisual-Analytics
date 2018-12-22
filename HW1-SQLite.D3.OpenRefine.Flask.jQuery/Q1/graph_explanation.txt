@@ -1,0 +1,1 @@
+Force Atlas algorithm is used to clustering the nodes in graph, in which the embryo movies of a style are set to be bigger and more red than others. Black nodes represent movies which only have one similar movie. Style clustering and similarity relations are well shown in this graph.

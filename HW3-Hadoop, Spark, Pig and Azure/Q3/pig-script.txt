@@ -1,0 +1,15 @@
+start_table = LOAD 's3://cse6242oan-2018fall-aws-big/*' AS (bigram:chararray, year:int, occurrences: int, books:int);
+
+filtered = FILTER start_table by occurrences >= 300 and books >= 12;
+
+grouped = GROUP filtered by bigram;
+
+sumed = FOREACH grouped GENERATE group, SUM(filtered.books), SUM(filtered.occurrences);
+
+calculated = FOREACH sumed GENERATE $0, ((double)($2%$1)/$1)+($2/$1);
+
+sorted = ORDER calculated BY $1 DESC, $0 ASC;
+
+finalRes = LIMIT sorted 15;
+
+STORE finalRes INTO 's3://cse6242oan-zfang74/pig-output.txt' USING PigStorage('\t');

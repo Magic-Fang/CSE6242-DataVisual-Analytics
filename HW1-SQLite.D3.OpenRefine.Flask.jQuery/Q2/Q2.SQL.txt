@@ -1,0 +1,216 @@
+-- Setup. DO NOT REMOVE.
+.headers on
+.mode list
+.separator ','
+
+DROP TABLE IF EXISTS movies;
+DROP TABLE IF EXISTS cast;
+DROP VIEW IF EXISTS good_collaboration;
+DROP TABLE IF EXISTS movie_overview;
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (a.i) Create tables
+
+-- [insert your SQL statement(s) BELOW this line]
+
+CREATE TABLE movies(
+id  INT  PRIMARY KEY,
+name TEXT,
+score INT);
+
+CREATE TABLE cast(
+movie_id INT,
+cast_id INT,
+cast_name TEXT);
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.tables
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (a.ii) Import data
+
+-- [insert your SQLite command(s) BELOW this line]
+
+.separator ","
+.import movie-name-score.txt  movies
+.import movie-cast.txt cast
+
+-- [insert your SQLite command(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.headers off
+SELECT COUNT(*) FROM movies;
+SELECT COUNT(*) FROM cast;
+.headers on
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (b) Create indexes
+
+-- [insert your SQL statement(s) BELOW this line]
+
+CREATE INDEX scores_index ON movies(score);
+CREATE INDEX cast_index ON cast(cast_id);
+CREATE INDEX movie_index ON movies(id);
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.indexes
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (c) Calculate average score
+
+-- [insert your SQL statement(s) BELOW this line]
+
+SELECT avg(score) as average_score FROM movies WHERE score>=5;
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (d) Find poor movies
+
+-- [insert your SQL statement(s) BELOW this line]
+
+SELECT * FROM movies ORDER BY score, name asc LIMIT 5;
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (e) Find laid back actors
+
+-- [insert your SQL statement(s) BELOW this line]
+
+select cast_id,cast_name,count(cast_id) as movie_count
+from cast group by cast_id having count(cast_id)=2 
+order by cast_name asc limit 10;
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (f) Get high scoring actors
+
+-- [insert your SQL statement(s) BELOW this line]
+
+select cast_id, cast_name, avg(score) as average_score from cast inner join movies on id=movie_id where score>=40 group by cast_id having count(cast_id)>2 order by avg(score) desc, cast_name limit 10; 
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (g) Creating views
+
+-- [insert your SQL statement(s) BELOW this line]
+
+create view good_collaboration as select cast_member_id1,name1,cast_member_id2,name2,count(*) 
+as movie_count, avg(score) as average_movie_score from (select * from (select cast_id as
+cast_member_id1,cast_name as name1, movie_id from cast) as one inner join (select cast_id as 
+cast_member_id2,cast_name as name2,movie_id from cast) as two on 
+(cast_member_id1<cast_member_id2 and one.movie_id==two.movie_id)) as joined
+inner join (select id,score from movies) on id=joined.movie_id
+group by cast_member_id1, cast_member_id2 having count(*)>2 and avg(score)>=50;
+
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.headers off
+PRAGMA table_info(good_collaboration);
+SELECT AVG(average_movie_score) FROM good_collaboration;
+.headers on
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (h) Find the best collaborators
+
+-- [insert your SQL statement(s) BELOW this line]
+
+select cast_id, cast_name, collaboration_score from 
+(
+select * from 
+(select cast_member_id1 as cast_id, name1 as cast_name, avg(average_movie_score) as collaboration_score from good_collaboration group by cast_id)
+union all
+select * from
+(select cast_member_id2 as cast_id, name2 as cast_name, avg(average_movie_score) as collaboration_score from good_collaboration group by cast_id)
+)
+group by cast_id order by collaboration_score desc, cast_name asc limit 5;
+
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (i) Create FTS table and import data
+
+-- [insert your SQL statement(s) BELOW this line]
+
+CREATE VIRTUAL TABLE movie_overview USING fts3(
+id INT, name TEXT, year INT, overview TEXT, popularity DECIMAL);
+
+.import movie-overview.txt movie_overview
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (i.1) Count movies with "fight"
+
+-- [insert your SQL statement(s) BELOW this line]
+
+SELECT count(id) FROM movie_overview WHERE overview MATCH "fight";
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --
+
+-- (i.2) List movies with "love" and "story" nearby
+
+-- [insert your SQL statement(s) BELOW this line]
+
+SELECT id FROM movie_overview WHERE overview MATCH "love NEAR/5 story";
+
+
+-- [insert your SQL statement(s) ABOVE this line]
+
+-- [the following statement(s) are for autograding. DO NOT REMOVE.]
+.print '~~~~~'
+
+-- ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** --

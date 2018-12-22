@@ -1,0 +1,15 @@
+Pros and Cons of Visualization Tools
+1. Ease to develop (for developers)
+	Compared to Python, D3 semms like a more object-oriented development tool. The boundary between variable, object and function in D3 is more blurred, but it does well in seperate module development.
+
+2. Ease to maintain the visualization (for developers)
+	I think the difficult is the same to maintain visualization in D3 and Python. The main job you need to do is to know about the interface and how to use them. The only difference is you need to find a right visualization library for Python.
+
+3. Usability of visualization developed (for end users)
+	D3 is absolutely better in this area, because D3 owns lots of excellent interface and function to realize interactive visualization already.
+
+4. Scalability of visualization to “large” datasets
+	I feel more comfortable to process "large" data in Python, which owns wonderful math library and is good at scientific computing. But when it comes to visualization, I will choose D3.
+
+5. System requirements to run the visualization (e.g., browsers, OS, software licensing) (for end users)
+	To run D3, you just need a right browser. But to run Python program, unless it is well encapusalted, you must first have the correct version of Python and then install many relevant library.

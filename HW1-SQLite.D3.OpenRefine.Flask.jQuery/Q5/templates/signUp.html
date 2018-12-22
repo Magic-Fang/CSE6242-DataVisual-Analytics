@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+	 <meta charset="utf-8">
+	 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
+	 <meta name="description" content="">
+	 <meta name="author" content="">
+
+	 <title>SignUp Template for Bootstrap </title>
+
+	 <link href="static/css/bootstrap.min.css" rel="stylesheet">
+	 <link href="static/css/signup.css" rel="stylesheet">
+
+	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	 <script src="static/js/signUp.js"></script> 
+</head>
+ 
+<body>
+    <div class="container">
+        <form class="form-signin"  role="form">
+        <h2 class="form-signin-heading">Please Sign Up</h2>
+        <input type="email" id="inputUsername" name="username" class="form-control" placeholder="Email address" required autofocus>
+        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>       
+        <button class="btn btn-lg btn-primary btn-block" onclick="register()" type="button">Register</button>
+		</form>   
+     </div> 
+	<p align="center" id="show"></p>
+	<script>
+		function checkPass(pw) {
+	var regx = new RegExp("^(?=.*[A-Z]{1})(?=.*[0-9]{1})(?=.{8,})");
+		  return regx.test(pw);
+		 }
+		function checkPassUp(pw) {
+	var regx = new RegExp("^(?=.*[A-Z]{1})");
+		  return regx.test(pw);}
+		function checkPassNu(pw) {
+	var regx = new RegExp("^(?=.*[0-9]{1})");
+		  return regx.test(pw);}
+		function checkPassLe(pw) {
+	var regx = new RegExp("^(?=.{8,})");
+		  return regx.test(pw);}
+		function register(){
+		var email = document.getElementById("inputUsername").value;
+		var password = document.getElementById("inputPassword").value;
+		document.getElementById("inputUsername").value="";
+		document.getElementById("inputPassword").value="";
+		if (checkPass(password)==true) { 
+		document.getElementById("show").innerHTML = "Congratulations on registering for CSE6242, "+ email +"! Redirecting you to the course homepage...";
+		setTimeout(function(){
+    		window.location.href='http://poloclub.gatech.edu/cse6242/';
+		}, 3000);
+		}
+		else {
+		var info="";
+		if (checkPassLe(password)==false){info= info+"1. Should be at least 8 characters in length. ";}
+		if (checkPassUp(password)==false){info= info+"2. Should have at least 1 uppercase character. ";}
+		if (checkPassNu(password)==false){info= info+"3. Should have at least 1 number. ";}
+		document.getElementById("show").innerHTML = email+", Error! The password is invalid because it "+info+"Please try again!";
+		}
+	}
+	</script>
+</body>
+ 
+</html>
+

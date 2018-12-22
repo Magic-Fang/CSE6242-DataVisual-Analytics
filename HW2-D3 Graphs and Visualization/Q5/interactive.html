@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+    path { 
+    stroke: steelblue;
+    stroke-width: 3;
+    fill: none;
+	}
+	.axis path,.axis line {
+    fill: none;
+    stroke: black;
+    stroke-width: 2;
+	}
+	.city_name{
+	fill: steelblue;
+	font-size: 14pt;
+    font-family: Consolas, courier;
+	}
+	.label{
+	fill: white;
+	}
+	</style>
+    <title>zfang74</title>
+    <script type="text/javascript">
+    	function dot_to_com(num_s){
+		    var number_interval = (num_s+"").split('.');
+		    var expression = number_interval[0];
+		    var FACTOR = /(\d+)(\d{3})/;
+		    while (FACTOR.test(expression)) {expression = expression.replace(FACTOR, '$1' + ',' + '$2');}
+		    return expression + (number_interval.length > 1 ? '.' + number_interval[1] : '');
+		}
+		function refresh(city){
+		    svg.selectAll("path").remove();
+		    svg.selectAll("#Axis_Line_x").remove();
+		    svg.selectAll("#Axis_Line_y").remove();
+		    svg.selectAll("#yLabel").remove();
+		    svg.selectAll("#xLabel").remove();
+		}
+		function draw_figure(city){
+		    var xScale_Line = d3.scale.linear()
+		    					.range([(0.75)*W, W])
+		    					.domain([2013,2017]);
+		    var yScale_Line = d3.scale.linear()
+		    					.range([H/2, 0])
+		    					.domain([d3.min(rate[city], 
+		    					function(d) { return d; })-0.001
+		    					, 0.001 + d3.max(rate[city], function(d) { return d; })]);
+		    var xAxis_Line = d3.svg.axis().scale(xScale_Line)
+		        .orient("bottom").ticks(5)
+		        .tickFormat(d3.format("201"))
+		    var yAxis_Line = d3.svg.axis().scale(yScale_Line)
+		        .orient("left").ticks(5)
+		        .tickFormat(function(d) { return (d*100).toFixed(2) +"%"; });
+		    var vl = d3.svg.line()
+		    	.x(function(d,i) {return xScale_Line(2013+i); })
+		        .y(function(d,i) {return yScale_Line(d); });
+		    svg.append("path")
+		        .attr("class", "line")
+		        .attr("d", vl(rate[city]));
+		    svg.append("g")
+		        .attr("class", "x axis")
+		        .attr("id", "Axis_Line_x")
+		        .attr("transform", "translate(0," + (0.5)*H + ")")
+		        .call(xAxis_Line);
+		    svg.append("g")
+		        .attr("class", "y axis")
+		        .attr("id", "Axis_Line_y")
+		        .attr("transform", "translate("+(0.75)*W +"," + 0 + ")")
+		        .call(yAxis_Line);
+		    var Axis = ["Pct %","Year"];
+		    var yLabel = svg.selectAll(".yAxis")
+		        .data(Axis)
+		        .enter().append("text")
+		        .attr("id", "yLabel")
+	            .text("Pct %")
+	            .attr("x", (0.74)*W)
+	            .attr("y", 0)
+	            .style("text-anchor", "end")
+	            .attr("class", function (d, i) { return "yAxis zf_Axi axis axis_s"; });
+	      	var xLabel = svg.selectAll(".sAxis")
+	            .data(Axis)
+	            .enter().append("text")
+	            .attr("id", "xLabel")
+	            .text("Year")
+	            .attr("x", (1.05)*W)
+	            .attr("y", (0.5)*H)
+	            .style("text-anchor", "end")
+	            .attr("class", function (d, i) { return "sAxis zf_Axi axis axis_s"; });
+		}
+    </script></head>
+<body>
+    <script src="../lib/d3.v3.min.js"></script>
+    <script>
+    var distance = { top: 25, right: 0, bottom: 100, left: 150 };
+	var W = 1000 - distance.left - distance.right;
+	var H = 460 - distance.top - distance.bottom;
+    	var data = [
+    {city: 'San Antonio', population_2012: 1383505, growth: 
+    	{year_2013:25405, year_2014:26644 , year_2015:28593 , year_2016:23591 , year_2017:24208}},
+	{city: 'New York', population_2012: 8383504, growth: 
+		{year_2013:75138 , year_2014:62493 , year_2015:61324 , year_2016:32967 , year_2017:7272}},
+	{city: 'Chicago', population_2012: 2717989, growth: 
+		{year_2013:6493 , year_2014:2051 , year_2015:-1379 , year_2016:-4879 , year_2017:-3825}},
+	{city: 'Los Angeles', population_2012: 3859267, growth:
+		{year_2013:32516 , year_2014:30885 , year_2015:30791 , year_2016:27657 , year_2017:18643}},
+	{city: 'Phoenix', population_2012: 1495880, growth: 
+		{year_2013:25302 , year_2014:26547 , year_2015:27310 , year_2016:27003 , year_2017:24036}}];
+	var rate = {};
+	data.forEach(function(d, i){
+	    rate[d.city] = [];
+	    for(var i = 0; i < 5; i++){
+	    	d["population_201" +(i+3)] = d["population_201" +(i+2)] + d["growth"]["year_201" +(i+3)];
+	        rate[d.city][i] = (d["population_201" +(i+3)] - d["population_201" +(i+2)]) / d["population_201" +(i+2)];
+	    }
+	    d.tags_on_barChart = dot_to_com(d.population_2017);
+	    //console.log(d.tags_on_barChart);
+	});
+
+	data = data.sort(function (d1, d2) {return d3.ascending(d1.population_2017, d2.population_2017);})
+
+	var svg = d3.select("body").append("svg")
+	    .attr("width", W + distance.left + distance.right+200)
+	    .attr("height", H + distance.top + distance.bottom)
+	    .append("g")
+	    .attr("transform", "translate(" + distance.left + "," + distance.top + ")");
+
+	var x_scale = d3.scale.linear()
+	    .range([0, 2*W / 3])
+	    .domain([0, d3.max(data, function (d) {
+	        return d.population_2017;
+	    })]);
+
+	var y_scale = d3.scale.ordinal()
+	    .rangeRoundBands([H, 0], .1)
+	    .domain(data.map(function (d) {return d.city;}));
+
+	var yAxis = d3.svg.axis()
+	    .scale(y_scale)
+	    .tickSize(0)
+	    .orient("left");
+
+	var Axis_y = svg.append("g")
+	    .attr("class", "city_name")
+	    .call(yAxis)
+
+	svg.select(".domain").remove();
+	var bars = svg.selectAll(".bar")
+	    .data(data)
+	    .enter()
+	    .append("g")
+
+	bars.append("rect")
+	    .attr("x", 0)
+	    .attr("y", function (d) {return y_scale(d.city);})
+	    .attr("height", y_scale.rangeBand()-20)
+	    .attr("width", function (d) {return x_scale(d.population_2017);})
+	    .attr("fill", "steelblue")
+	    .attr("data", function(d){return d.city;})
+	    .on("mouseover", function() {
+	        d3.select(this).attr("fill", "orange");
+	        var city = this.getAttribute("data");
+	        draw_figure(city);})
+	    .on("mouseout", function(d, i) {
+	        d3.select(this).attr("fill", function() {return "steelblue";});
+	        var city = this.getAttribute("data");
+	        refresh(city);});
+	bars.append("text")
+	    .attr("class", "label")
+	    .attr("x", function (d) {return 12;})
+	    .attr("y", function (d) {return y_scale.rangeBand()*(0.4) +y_scale(d.city);})
+	    .text(function (d) {return d.tags_on_barChart;})
+
+    </script>
+</body>
+</html>

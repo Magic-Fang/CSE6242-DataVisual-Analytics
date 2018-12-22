@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>zfang74</title>
+	<style type="text/css">
+	.axis path,
+	.axis line{fill: none; stroke: black; shape-rendering: crispEdges;}
+	.pagebreak { page-break-before: always; }
+	</style>
+	<div id="figure1"></div>
+	<div class="pagebreak"> </div>
+	<div id="figure2"></div>
+	<div class="pagebreak"> </div>
+	<div id="figure3"></div>
+	<div class="pagebreak"> </div>
+	<div id="figure4"></div>
+	<div class="pagebreak"> </div>
+	<div id="figure5"></div>
+</head>
+<body>
+	<script type="text/javascript" src="../lib/d3.v3.min.js"></script>
+	<script>
+		d3.csv("movies.csv",function(csvdata){
+			var data = [];
+			var gd_blue_cross=[];
+			var bd_red_circle=[];
+			csvdata.forEach(function(d){
+				d.imdbRating = +d.imdbRating;
+				d.WinsNoms = +d.WinsNoms;
+				d.Budget = +d.Budget/1000000;
+				d.imdbVotes = +d.imdbVotes;
+				data.push(d);
+				if (d.IsGoodRating=="1")
+					gd_blue_cross.push(d);
+				else
+					bd_red_circle.push(d)
+			});
+			data1 = gd_blue_cross+bd_red_circle;
+			console.log(gd_blue_cross);
+			var h = 500;
+			var w = 800;
+			var padding = 100;
+			
+
+			var svg = d3.select('#figure1')
+					.append('svg')
+					.attr({'width':w,'height':h});
+			svg.append("text")
+			   .attr("transform", "translate("+(w/2-1.8*padding)+", "+(padding-18)+")")
+			   .style("font-weight", "bold")
+			   .text("Wins & nominations vs. IMDb Rating");
+
+			var arc = d3.svg.symbol()
+				.type("cross")	
+
+			// ------------------------------------  legend  ------------------------------------
+
+			svg.append("circle")
+			   .attr("cx", w-2*padding)
+			   .attr("cy", padding*1.5)
+			   .attr("r", 4)
+			   .attr("fill", "none")
+			   .attr("stroke", "red");
+			svg.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+4)+")")
+			   .text("Bad Rating");
+
+			svg.append("path")
+			   .attr("r", 4)
+			   .attr("d", arc)
+			   .attr("fill", "none")
+			   .attr("stroke", "blue")
+			   .attr("transform", "translate("+(w-2*padding)+","
+			   	+(padding*1.5+20)+")");
+			svg.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+25)+")")
+			   .text("Good Rating");
+
+
+
+			// ------------------------------   symbol in figure   ------------------------------
+			var xScale = d3.scale.linear()
+								 .range([padding, w-padding*2])
+								 .domain([d3.min(data, function(d){
+									return d.imdbRating;
+								 }),d3.max(data, function(d){
+								 	return d.imdbRating;
+								 })]).nice();
+			var yScale = d3.scale.linear()
+						   		 .domain([d3.min(data, function(d){
+									return d.WinsNoms;
+								 }),d3.max(data, function(d){
+								 	return d.WinsNoms;
+								 })]).nice()
+								 .range([h-padding, padding]);
+
+			svg.selectAll("circle")
+				   .data(bd_red_circle)
+				   .enter()
+				   .append("circle")
+				   .attr("cx", function(d){
+				   	return xScale(d.imdbRating);
+				   })
+				   .attr("cy", function(d){
+				   	return yScale(d.WinsNoms);
+				   })
+				   .attr("r", 4)
+				   .attr("stroke", "red")
+				   .attr("fill", "none");
+
+			var line = svg.selectAll('path')
+				.data(gd_blue_cross)
+				.enter()
+				.append('path')
+				.attr("r",4)
+				.attr('fill',"none")
+				.attr("stroke", "blue")
+				.attr("d", arc)
+				.attr('transform',function(d)
+			{ return "translate("+xScale(d.imdbRating)+","+yScale(d.WinsNoms)+")"; }
+				);
+
+
+			// ------------------------------   Axis  -------------------------------------------
+
+			var xAxis = d3.svg.axis()
+								  .scale(xScale)
+								  .orient("bottom")
+								  .ticks(10);
+
+			var yAxis = d3.svg.axis()
+								  .scale(yScale)
+								  .orient("left")
+								  .ticks(10);
+			svg.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(0, " + (h-padding) + ")")
+               .call(xAxis)
+               .append("text")
+               	.attr("class", "label")
+               	.attr("x", w-2*padding+120)
+               	.attr("y", 0)
+               	.text("imdbRating")
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end");
+
+            svg.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(" + padding + ", 0)")
+               .call(yAxis)
+               .append("text")
+               	.text("WinsNoms")
+               	.attr("class", "label")
+               	.attr("x", 30)
+               	.attr("y", 80)
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // ---------------------------------------------------------------------------------
+            // ------------------------------------ figure two ---------------------------------
+            var svg2 = d3.select('#figure2')
+					.append('svg')
+					.attr({'width':w,'height':h});
+			svg2.append("text")
+			   .attr("transform", "translate("+(w/2-1.4*padding)+", "+(padding-18)+")")
+			   .style("font-weight", "bold")
+			   .text("Budget vs. IMDb Rating");
+
+			var arc2 = d3.svg.symbol()
+				.type("cross")	
+
+			// ------------------------------------  legend  ------------------------------------
+
+			svg2.append("circle")
+			   .attr("cx", w-2*padding)
+			   .attr("cy", padding*1.5)
+			   .attr("r", 4)
+			   .attr("fill", "none")
+			   .attr("stroke", "red");
+			svg2.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+4)+")")
+			   .text("Bad Rating");
+
+			svg2.append("path")
+			   .attr("r", 4)
+			   .attr("d", arc2)
+			   .attr("fill", "none")
+			   .attr("stroke", "blue")
+			   .attr("transform", "translate("+(w-2*padding)+","
+			   	+(padding*1.5+20)+")");
+			svg2.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+25)+")")
+			   .text("Good Rating");
+
+
+
+			// ------------------------------   symbol in figure   ------------------------------
+			var xScale2 = d3.scale.linear()
+								 .range([padding, w-padding*2])
+								 .domain([d3.min(data, function(d){
+									return d.imdbRating;
+								 }),d3.max(data, function(d){
+								 	return d.imdbRating;
+								 })]).nice();
+			var yScale2 = d3.scale.linear()
+						   		 .domain([d3.min(data, function(d){
+									return d.Budget;
+								 }),d3.max(data, function(d){
+								 	return d.Budget;
+								 })]).nice()
+								 .range([h-padding, padding]);
+
+			svg2.selectAll("circle")
+				   .data(bd_red_circle)
+				   .enter()
+				   .append("circle")
+				   .attr("cx", function(d){
+				   	return xScale2(d.imdbRating);
+				   })
+				   .attr("cy", function(d){
+				   	return yScale2(d.Budget);
+				   })
+				   .attr("r", 4)
+				   .attr("stroke", "red")
+				   .attr("fill", "none");
+
+
+			var line = svg2.selectAll('path')
+				.data(gd_blue_cross)
+				.enter()
+				.append('path')
+				.attr("r",4)
+				.attr('fill',"none")
+				.attr("stroke", "blue")
+				.attr("d", arc2)
+				.attr('transform',function(d)
+			{ return "translate("+xScale2(d.imdbRating)+","+yScale2(d.Budget)+")"; }
+				);
+
+
+			// ------------------------------   Axis  -------------------------------------------
+
+			var xAxis2 = d3.svg.axis()
+								  .scale(xScale2)
+								  .orient("bottom")
+								  .ticks(10);
+
+			var yAxis2 = d3.svg.axis()
+								  .scale(yScale2)
+								  .orient("left")
+								  .ticks(10);
+			svg2.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(0, " + (h-padding) + ")")
+               .call(xAxis2)
+               .append("text")
+               	.attr("class", "label")
+               	.attr("x", w-2*padding+120)
+               	.attr("y", 0)
+               	.text("imdbRating")
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end");
+
+            svg2.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(" + padding + ", 0)")
+               .call(yAxis2)
+               .append("text")
+               	.text("Budget/Million")
+               	.attr("class", "label")
+               	.attr("x", 60)
+               	.attr("y", 80)
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end")
+
+
+        	
+
+
+
+
+        	// ---------------------------------------------------------------------------------
+            // ------------------------------------ figure three ---------------------------------
+            var svg3 = d3.select('#figure3')
+					.append('svg')
+					.attr({'width':w,'height':h});
+			svg3.append("text")
+			   .attr("transform", "translate("+(w/2-2.2*padding)+", "+(padding-18)+")")
+			   .style("font-weight", "bold")
+			   .text("Votes vs. IMDb Rating sized by Wins+Nominations");
+
+			var arc3 = d3.svg.symbol()
+				.type("cross");	
+
+			// ------------------------------------  legend  ------------------------------------
+
+			svg3.append("circle")
+			   .attr("cx", w-2*padding)
+			   .attr("cy", padding*1.5)
+			   .attr("r", 4)
+			   .attr("fill", "none")
+			   .attr("stroke", "red");
+			svg3.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+4)+")")
+			   .text("Bad Rating");
+
+			svg3.append("path")
+			   .attr("r", 4)
+			   .attr("d", arc3)
+			   .attr("fill", "none")
+			   .attr("stroke", "blue")
+			   .attr("transform", "translate("+(w-2*padding)+","
+			   	+(padding*1.5+20)+")");
+			svg3.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+25)+")")
+			   .text("Good Rating");
+
+
+
+			// ------------------------------   symbol in figure   ------------------------------
+			var xScale3 = d3.scale.linear()
+								 .range([padding, w-padding*2])
+								 .domain([d3.min(data, function(d){
+									return d.imdbRating;
+								 }),d3.max(data, function(d){
+								 	return d.imdbRating;
+								 })]).nice();
+			var yScale3 = d3.scale.linear()
+						   		 .domain([d3.min(data, function(d){
+									return d.imdbVotes;
+								 }),d3.max(data, function(d){
+								 	return d.imdbVotes;
+								 })]).nice()
+								 .range([h-padding, padding]);
+
+			svg3.selectAll("circle")
+				   .data(bd_red_circle)
+				   .enter()
+				   .append("circle")
+				   .attr("cx", function(d){
+				   	return xScale3(d.imdbRating);
+				   })
+				   .attr("cy", function(d){
+				   	return yScale3(d.imdbVotes);
+				   })
+				   .attr("r", function(d){
+					if (d.WinsNoms>=100)
+						return 7+(d.WinsNoms-100)/40;
+					if (d.WinsNoms>10)
+						return 3.5+(d.WinsNoms-10)/24;
+					else
+						return 1.5+d.WinsNoms/6;
+				})
+				   .attr("stroke", "red")
+				   .attr("fill", "none");
+
+
+			var line = svg3.selectAll('path')
+				.data(gd_blue_cross)
+				.enter()
+				.append('path')
+				.attr('fill',"none")
+				.attr("stroke", "blue")
+				.attr("d", d3.svg.symbol()
+				.type("cross")
+				.size(function(d){
+					var FACTOR = 8;
+					if (d.WinsNoms>=100)
+						return FACTOR*(8+(d.WinsNoms-100)/40);
+					if (d.WinsNoms>10)
+						return FACTOR*(4+(d.WinsNoms-10)/24);
+					else
+						return FACTOR*(2+d.WinsNoms/5);
+				}))
+				.attr('transform',function(d)
+			{ return "translate("+xScale3(d.imdbRating)+","+yScale3(d.imdbVotes)+")"; }
+				);
+
+
+			// ------------------------------   Axis  -------------------------------------------
+
+			var xAxis3 = d3.svg.axis()
+								  .scale(xScale3)
+								  .orient("bottom")
+								  .ticks(10);
+
+			var yAxis3 = d3.svg.axis()
+								  .scale(yScale3)
+								  .orient("left")
+								  .ticks(10);
+			svg3.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(0, " + (h-padding) + ")")
+               .call(xAxis3)
+               .append("text")
+               	.attr("class", "label")
+               	.attr("x", w-2*padding+120)
+               	.attr("y", 0)
+               	.text("imdbRating")
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end");
+
+            svg3.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(" + padding + ", 0)")
+               .call(yAxis3)
+               .append("text")
+               	.text("imdbVotes")
+               	.attr("class", "label")
+               	.attr("x", 20)
+               	.attr("y", 80)
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end")
+
+
+
+
+
+
+
+
+			// ---------------------------------------------------------------------------------
+            // --------------------------------- figure 4 --------------------------------------
+
+            var svg4 = d3.select('#figure4')
+					.append('svg')
+					.attr({'width':w,'height':h});
+			svg4.append("text")
+			   .attr("transform", "translate("+(w/2-1.8*padding)+", "+(padding-18)+")")
+			   .style("font-weight", "bold")
+			   .text("Wins & nominations vs. IMDb Rating");
+
+			var arc = d3.svg.symbol()
+				.type("cross")	
+
+			// ------------------------------------  legend  ------------------------------------
+
+			svg4.append("circle")
+			   .attr("cx", w-2*padding)
+			   .attr("cy", padding*1.5)
+			   .attr("r", 4)
+			   .attr("fill", "none")
+			   .attr("stroke", "red");
+			svg4.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+4)+")")
+			   .text("Bad Rating");
+
+			svg4.append("path")
+			   .attr("r", 4)
+			   .attr("d", arc)
+			   .attr("fill", "none")
+			   .attr("stroke", "blue")
+			   .attr("transform", "translate("+(w-2*padding)+","
+			   	+(padding*1.5+20)+")");
+			svg4.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+25)+")")
+			   .text("Good Rating");
+
+
+
+			// ------------------------------   symbol in figure   ------------------------------
+			var xScale = d3.scale.linear()
+								 .range([padding, w-padding*2])
+								 .domain([d3.min(data, function(d){
+									return d.imdbRating;
+								 }),d3.max(data, function(d){
+								 	return d.imdbRating;
+								 })]).nice();
+			var yScale = d3.scale.sqrt()
+						   		 .domain([d3.min(data, function(d){
+									return d.WinsNoms;
+								 }),d3.max(data, function(d){
+								 	return d.WinsNoms;
+								 })]).nice()
+								 .range([h-padding, padding]);
+
+			svg4.selectAll("circle")
+				   .data(bd_red_circle)
+				   .enter()
+				   .append("circle")
+				   .attr("cx", function(d){
+				   	return xScale(d.imdbRating);
+				   })
+				   .attr("cy", function(d){
+				   	return yScale(d.WinsNoms);
+				   })
+				   .attr("r", 4)
+				   .attr("stroke", "red")
+				   .attr("fill", "none");
+
+			var line = svg4.selectAll('path')
+				.data(gd_blue_cross)
+				.enter()
+				.append('path')
+				.attr("r",4)
+				.attr('fill',"none")
+				.attr("stroke", "blue")
+				.attr("d", arc)
+				.attr('transform',function(d)
+			{ return "translate("+xScale(d.imdbRating)+","+yScale(d.WinsNoms)+")"; }
+				);
+
+
+			// ------------------------------   Axis  -------------------------------------------
+
+			var xAxis = d3.svg.axis()
+								  .scale(xScale)
+								  .orient("bottom")
+								  .ticks(10);
+
+			var yAxis = d3.svg.axis()
+								  .scale(yScale)
+								  .orient("left")
+								  .ticks(10);
+			svg4.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(0, " + (h-padding) + ")")
+               .call(xAxis)
+               .append("text")
+               	.attr("class", "label")
+               	.attr("x", w-2*padding+120)
+               	.attr("y", 0)
+               	.text("imdbRating")
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end");
+
+            svg4.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(" + padding + ", 0)")
+               .call(yAxis)
+               .append("text")
+               	.text("WinsNoms")
+               	.attr("class", "label")
+               	.attr("x", 30)
+               	.attr("y", 80)
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end")
+
+
+
+
+
+
+
+
+            // ---------------------------------------------------------------------------------
+            // --------------------------------- figure 5 --------------------------------------
+
+            var svg5 = d3.select('#figure5')
+					.append('svg')
+					.attr({'width':w,'height':h});
+			svg5.append("text")
+			   .attr("transform", "translate("+(w/2-1.8*padding)+", "+(padding-18)+")")
+			   .style("font-weight", "bold")
+			   .text("Wins & nominations vs. IMDb Rating");
+
+			var arc = d3.svg.symbol()
+				.type("cross")	
+
+			// ------------------------------------  legend  ------------------------------------
+
+			svg5.append("circle")
+			   .attr("cx", w-2*padding)
+			   .attr("cy", padding*1.5)
+			   .attr("r", 4)
+			   .attr("fill", "none")
+			   .attr("stroke", "red");
+			svg5.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+4)+")")
+			   .text("Bad Rating");
+
+			svg5.append("path")
+			   .attr("r", 4)
+			   .attr("d", arc)
+			   .attr("fill", "none")
+			   .attr("stroke", "blue")
+			   .attr("transform", "translate("+(w-2*padding)+","
+			   	+(padding*1.5+20)+")");
+			svg5.append("text")
+			   .attr("transform", "translate("+(w-2*padding+10)+","
+			   	+(padding*1.5+25)+")")
+			   .text("Good Rating");
+
+
+
+			// ------------------------------   symbol in figure   ------------------------------
+			var xScale = d3.scale.linear()
+								 .range([padding, w-padding*2])
+								 .domain([d3.min(data, function(d){
+									return d.imdbRating;
+								 }),d3.max(data, function(d){
+								 	return d.imdbRating;
+								 })]).nice();
+			var yScale = d3.scale.log()
+						   		 .domain([0.0001,d3.max(data, function(d){
+								 	return d.WinsNoms;
+								 })]).nice()
+								 .range([h-padding, padding]);
+
+			svg5.selectAll("circle")
+				   .data(bd_red_circle)
+				   .enter()
+				   .append("circle")
+				   .attr("cx", function(d){
+				   	return xScale(d.imdbRating);
+				   })
+				   .attr("cy", function(d){
+				   	if (d.WinsNoms>0)
+				   		return yScale(d.WinsNoms);
+				   	else
+				   		return yScale(0.0001);
+				   })
+				   .attr("r", 4)
+				   .attr("stroke", "red")
+				   .attr("fill", "none");
+
+			var line = svg5.selectAll('path')
+				.data(gd_blue_cross)
+				.enter()
+				.append('path')
+				.attr("r",4)
+				.attr('fill',"none")
+				.attr("stroke", "blue")
+				.attr("d", arc)
+				.attr('transform',function(d)
+			{ 	if (d.WinsNoms>0)
+					return "translate("+xScale(d.imdbRating)+","+yScale(d.WinsNoms)+")";
+				else
+					return "translate("+xScale(d.imdbRating)+","+yScale(0.0001)+")";
+			 }
+				);
+
+
+			// ------------------------------   Axis  -------------------------------------------
+
+			var xAxis = d3.svg.axis()
+								  .scale(xScale)
+								  .orient("bottom")
+								  .ticks(10);
+
+			var yAxis = d3.svg.axis()
+								  .scale(yScale)
+								  .orient("left")
+								  .ticks(10);
+			svg5.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(0, " + (h-padding) + ")")
+               .call(xAxis)
+               .append("text")
+               	.attr("class", "label")
+               	.attr("x", w-2*padding+120)
+               	.attr("y", 0)
+               	.text("imdbRating")
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end");
+
+            svg5.append("g")
+               .attr("class", "axis")
+               .attr("transform", "translate(" + padding + ", 0)")
+               .call(yAxis)
+               .append("text")
+               	.text("WinsNoms")
+               	.attr("class", "label")
+               	.attr("x", 30)
+               	.attr("y", 80)
+               	.style("font-weight", "bold")
+               	.style("text-anchor", "end")
+
+		});
+
+		
+	</script>
+</body>
+</html>

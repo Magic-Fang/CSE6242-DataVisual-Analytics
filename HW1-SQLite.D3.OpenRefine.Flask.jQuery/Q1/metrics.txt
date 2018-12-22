@@ -1,0 +1,8 @@
+Average Degree: 2.979
+Diameter: 15
+Average Path length: 6.981766384983949
+
+My explanation: 
+Average Degree shows the number of average connected nodes for each distinct node, which shows whether the graph is well connected or not.
+Diameter of a network represents the longest path of the shortest paths between any two nodes. It can show us the width of the network graph.
+Average Path length is the average length of the shortest paths for all possible node pairs. It shows the average cost you need to spend on, if you want to transport from one node to another.

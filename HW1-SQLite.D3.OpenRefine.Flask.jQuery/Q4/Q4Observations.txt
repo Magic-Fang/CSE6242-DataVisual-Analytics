@@ -1,0 +1,5 @@
+value.replace("F", "1").replace("M", "0")
+if(value==null, "0", value)
+value.replace("55+","56-100")
+if(toNumber(value)>1000, 1, 0)
+3319,P00025442

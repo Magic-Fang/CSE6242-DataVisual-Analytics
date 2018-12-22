@@ -1,0 +1,3 @@
+Q3.a.2: The Combination of Wins+Nominations and IMDb Rating is better at separating the classes. Because budget doesn't seem to affect imdbRating significantly and on the contrary, those movies with high imdbRating always have high Wins+Nominations, which is better for separating.
+
+Q3.c:  Log scale should be uesd when the input data is tremendously huge with big difference between data and there is not "0" input. Square root scale should be uesd when input data is huge but relatively small than previous ones for log scale.

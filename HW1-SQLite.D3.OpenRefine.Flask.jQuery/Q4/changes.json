@@ -1,0 +1,67 @@
+[
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column Gender using expression grel:value.replace(\"F\", \"1\").replace(\"M\", \"0\")",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "Gender",
+    "expression": "grel:value.replace(\"F\", \"1\").replace(\"M\", \"0\")",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column Product_Category_2 using expression grel:if(value==null, \"0\", value)",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "Product_Category_2",
+    "expression": "grel:if(value==null, \"0\", value)",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column Product_Category_3 using expression grel:if(value==null, \"0\", value)",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "Product_Category_3",
+    "expression": "grel:if(value==null, \"0\", value)",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column Age using expression grel:value.replace(\"55+\",\"56-100\")",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "Age",
+    "expression": "grel:value.replace(\"55+\",\"56-100\")",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/column-addition",
+    "description": "Create column High_Priced at index 12 based on column Purchase using expression grel:if(toNumber(value)>1000, 1, 0)",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "newColumnName": "High_Priced",
+    "columnInsertIndex": 12,
+    "baseColumnName": "Purchase",
+    "expression": "grel:if(toNumber(value)>1000, 1, 0)",
+    "onError": "set-to-blank"
+  }
+]
